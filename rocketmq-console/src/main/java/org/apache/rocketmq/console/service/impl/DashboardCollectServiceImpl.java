@@ -24,92 +24,78 @@ import com.google.common.base.Ticker;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.annotation.Resource;
 import org.apache.rocketmq.console.config.RMQConfigure;
 import org.apache.rocketmq.console.service.DashboardCollectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 @Service
 public class DashboardCollectServiceImpl implements DashboardCollectService {
+
+    private final static Logger log = LoggerFactory.getLogger(DashboardCollectServiceImpl.class);
 
     @Resource
     private RMQConfigure rmqConfigure;
 
-    private final static Logger log = LoggerFactory.getLogger(DashboardCollectServiceImpl.class);
-
     private LoadingCache<String, List<String>> brokerMap = CacheBuilder.newBuilder()
-        .maximumSize(1000)
-        .concurrencyLevel(10)
-        .recordStats()
-        .ticker(Ticker.systemTicker())
-        .removalListener(new RemovalListener<Object, Object>() {
-            @Override
-            public void onRemoval(RemovalNotification<Object, Object> notification) {
-                log.debug(notification.getKey() + " was removed, cause is " + notification.getCause());
-            }
-        })
-        .build(
-            new CacheLoader<String, List<String>>() {
-                @Override
-                public List<String> load(String key) {
-                    List<String> list = Lists.newArrayList();
-                    return list;
-                }
-            }
-        );
+            .maximumSize(1000)
+            .concurrencyLevel(10)
+            .recordStats()
+            .ticker(Ticker.systemTicker())
+            .removalListener(notification -> log.debug(notification.getKey() + " was removed, cause is " + notification.getCause()))
+            .build(new CacheLoader<String, List<String>>() {
+                       @Override
+                       public List<String> load(String key) {
+                           return Lists.newArrayList();
+                       }
+                   }
+            );
 
     private LoadingCache<String, List<String>> topicMap = CacheBuilder.newBuilder()
-        .maximumSize(1000)
-        .concurrencyLevel(10)
-        .recordStats()
-        .ticker(Ticker.systemTicker())
-        .removalListener(new RemovalListener<Object, Object>() {
-            @Override
-            public void onRemoval(RemovalNotification<Object, Object> notification) {
-                log.debug(notification.getKey() + " was removed, cause is " + notification.getCause());
-            }
-        })
-        .build(
-            new CacheLoader<String, List<String>>() {
-                @Override
-                public List<String> load(String key) {
-                    List<String> list = Lists.newArrayList();
-                    return list;
-                }
-            }
-        );
+            .maximumSize(1000)
+            .concurrencyLevel(10)
+            .recordStats()
+            .ticker(Ticker.systemTicker())
+            .removalListener(notification -> log.debug(notification.getKey() + " was removed, cause is " + notification.getCause()))
+            .build(new CacheLoader<String, List<String>>() {
+                       @Override
+                       public List<String> load(String key) {
+                           return Lists.newArrayList();
+                       }
+                   }
+            );
 
     @Override
     public LoadingCache<String, List<String>> getBrokerMap() {
         return brokerMap;
     }
+
     @Override
     public LoadingCache<String, List<String>> getTopicMap() {
         return topicMap;
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Map<String, List<String>> jsonDataFile2map(File file) {
         List<String> strings;
         try {
             strings = Files.readLines(file, Charsets.UTF_8);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw Throwables.propagate(e);
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (String string : strings) {
             sb.append(string);
         }

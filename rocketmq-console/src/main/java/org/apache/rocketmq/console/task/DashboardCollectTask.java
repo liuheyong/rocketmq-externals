@@ -316,7 +316,7 @@ public class DashboardCollectTask {
         Long oldLastTimestamp = Long.parseLong(oldLastTps.split(",")[0]);
         String newFirstTps = newTpsList.get(0);
         Long newFirstTimestamp = Long.parseLong(newFirstTps.split(",")[0]);
-        if (oldLastTimestamp.longValue() < newFirstTimestamp.longValue()) {
+        if (oldLastTimestamp < newFirstTimestamp) {
             result.addAll(oldTpsList);
             result.addAll(newTpsList);
             return result;

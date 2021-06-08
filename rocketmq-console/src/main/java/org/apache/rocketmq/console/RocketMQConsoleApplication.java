@@ -24,10 +24,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @ServletComponentScan
-public class App {
+public class RocketMQConsoleApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
+        SpringApplication.run(RocketMQConsoleApplication.class, args);
     }
 
 }
